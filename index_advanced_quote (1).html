@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Free Cleaning Quote (Advanced)</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+    label { display: block; margin-top: 12px; }
+    .checkbox-group { display: flex; flex-direction: column; margin-left: 10px; }
+    select, input[type="number"] { width: 100%; padding: 5px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    .result { margin-top: 20px; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h2>🧽 Free Cleaning Quote (Detailed)</h2>
+
+  <label>Cleaning Type:
+    <select id="cleanType">
+      <option value="residential">Residential</option>
+      <option value="commercial">Commercial</option>
+      <option value="airbnb">Airbnb</option>
+      <option value="deep">Deep Cleaning</option>
+      <option value="move">Move In / Move Out</option>
+    </select>
+  </label>
+
+  <label>Square Footage:
+    <input type="number" id="sqft" placeholder="e.g. 1500" />
+  </label>
+
+  <label>Bedrooms:
+    <input type="number" id="bedrooms" />
+  </label>
+
+  <label>Bathrooms:
+    <input type="number" id="bathrooms" />
+  </label>
+
+  <label>Size of Kitchen:
+    <select id="kitchenSize">
+      <option value="small">Small</option>
+      <option value="medium">Medium</option>
+      <option value="large">Large</option>
+    </select>
+  </label>
+
+  <label>Living Rooms:
+    <input type="number" id="livingRooms" />
+  </label>
+
+  <label>Additional Rooms (Dining, Attic, etc.):
+    <input type="number" id="additionalRooms" />
+  </label>
+
+  <label>Cleaning Supplies Provided By:
+    <select id="supplies">
+      <option value="client">Client</option>
+      <option value="cleaner">Cleaner (adds $10)</option>
+    </select>
+  </label>
+
+  <label>Frequency:
+    <select id="frequency">
+      <option value="once">One Time</option>
+      <option value="weekly">Weekly</option>
+      <option value="biweekly">Bi-Weekly</option>
+      <option value="monthly">Monthly</option>
+    </select>
+  </label>
+
+  <label>Additional Services:</label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" class="addon" value="fridge" /> Inside Fridge ($20)</label>
+    <label><input type="checkbox" class="addon" value="oven" /> Inside Oven ($25)</label>
+    <label><input type="checkbox" class="addon" value="laundry" /> Laundry Service ($15)</label>
+    <label><input type="checkbox" class="addon" value="windows" /> Interior Window Cleaning ($30)</label>
+    <label><input type="checkbox" class="addon" value="furniture" /> Furniture Cleaning ($30)</label>
+    <label><input type="checkbox" class="addon" value="carpet" /> Carpet Cleaning ($40 per room)</label>
+    <label><input type="checkbox" class="addon" value="closets" /> Organized Closets ($30)</label>
+    <label><input type="checkbox" id="specialRooms" /> Specialty Cleaning for Additional Rooms ($30)</label>
+  </div>
+
+  <button onclick="calculate()">Get Estimate</button>
+  <div class="result" id="output"></div>
+
+  <script>
+    function calculate() {
+      const sqft = +document.getElementById('sqft').value || 0;
+      const beds = +document.getElementById('bedrooms').value || 0;
+      const baths = +document.getElementById('bathrooms').value || 0;
+      const kitchenSize = document.getElementById('kitchenSize').value;
+      const livingRooms = +document.getElementById('livingRooms').value || 0;
+      const additionalRooms = +document.getElementById('additionalRooms').value || 0;
+      const supplies = document.getElementById('supplies').value;
+      const type = document.getElementById('cleanType').value;
+      const freq = document.getElementById('frequency').value;
+      const addons = document.querySelectorAll('.addon:checked');
+      const specialRooms = document.getElementById('specialRooms').checked;
+
+      let rate = 0.10;
+      if (type === 'commercial') rate = 0.11;
+      else if (type === 'deep') rate = 0.13;
+      else if (type === 'move') rate = 0.15;
+
+      let total = sqft * rate;
+
+      total += beds * 50;
+      total += baths * 30;
+      total += livingRooms * 20;
+      total += additionalRooms * 20;
+
+      if (supplies === "cleaner") total += 10;
+
+      if (freq === 'weekly') total *= 0.85;
+      else if (freq === 'biweekly') total *= 0.90;
+      else if (freq === 'monthly') total *= 0.95;
+
+      addons.forEach(a => {
+        if (a.value === 'fridge') total += 20;
+        else if (a.value === 'oven') total += 25;
+        else if (a.value === 'laundry') total += 15;
+        else if (a.value === 'windows') total += 30;
+        else if (a.value === 'furniture') total += 30;
+        else if (a.value === 'carpet') total += 40 * livingRooms;
+        else if (a.value === 'closets') total += 30;
+      });
+
+      if (specialRooms) total += 30;
+
+      total += 15; // transportation
+      total += 20; // admin
+
+      document.getElementById('output').textContent = `Estimated Total: $${total.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
